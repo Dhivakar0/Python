@@ -2,7 +2,6 @@ import requests
 # from pprint import pprint
 from dotenv import load_dotenv
 import os
-# from requests.auth import HTTPBasicAuth
 
 load_dotenv()
 
@@ -14,27 +13,27 @@ class DataManager:
 
     def __init__(self):
         self.api_key = os.environ["API_KEY"]
-        self.headers = {
-            'Authorization': f'Bearer {self.api_key}'
-        }
         self.destination_data = {}
 
     def get_destination_data(self):
-        self.response = requests.get(url=sheety_api_endpoint,headers=self.headers)
-        self.data = self.response.json()
-        self.destination_data = self.data["prices"]
+        self.headers = {
+            'Authorization': f'Bearer {self.api_key}'
+        }
+        response = requests.get(url=sheety_api_endpoint,headers=self.headers)
+        data = response.json()
+        self.destination_data = data["prices"]
         return self.destination_data
 
     def update_destination_data(self):
-        for city in self.destination_data:
+        for city_name in self.destination_data:
             new_data = {
                 'price':
                     {
-                        'iataCode' : city['iataCode']
+                        'iataCode' : city_name['iataCode']
                     }
             }
 
-            response = requests.put(url=f"{sheety_api_endpoint}/{city['id']}",
+            response = requests.put(url=f"{sheety_api_endpoint}/{city_name['id']}",
                                     json=new_data,
                                     headers=self.headers)
             print(response.text)
