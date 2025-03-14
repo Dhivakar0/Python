@@ -21,7 +21,6 @@ for city_name in sheet_data:
         time.sleep(2)
 print(f"sheet data:\n{sheet_data}")
 
-# updated_sheet_data = flight_search.
 data_manager.destination_data = sheet_data
 data_manager.update_destination_data()
 
