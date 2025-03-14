@@ -50,7 +50,7 @@ class FlightSearch:
 
 
     def get_destination_code(self,city):
-        self.city_api_endpoint = "https://api.amadeus.net/v1/reference-data/locations/cities"
+        self.city_api_endpoint = "https://test.api.amadeus.com/v1/reference-data/locations/cities"
         headers = {"Authorization": f"Bearer {self.token}"}
         query = {
             'keyword': city,
