@@ -13,12 +13,12 @@ class DataManager:
 
     def __init__(self):
         self.api_key = os.environ["API_KEY"]
-        self.destination_data = {}
-
-    def get_destination_data(self):
         self.headers = {
             'Authorization': f'Bearer {self.api_key}'
         }
+        self.destination_data = {}
+
+    def get_destination_data(self):
         response = requests.get(url=sheety_api_endpoint,headers=self.headers)
         data = response.json()
         self.destination_data = data["prices"]
@@ -33,16 +33,11 @@ class DataManager:
                     }
             }
 
-            response = requests.put(url=f"{sheety_api_endpoint}/{city_name['id']}",
+            requests.put(url=f"{sheety_api_endpoint}/{city_name['id']}",
                                     json=new_data,
                                     headers=self.headers)
-            print(response.text)
 
 
-
-# [{'city': 'Paris', 'iataCode': '', 'id': 2, 'lowestPrice': 54},
-#  {'city': 'Frankfurt', 'iataCode': '', 'id': 3, 'lowestPrice': 42},
-#  {'city': 'Austin', 'iataCode': '', 'id': 4, 'lowestPrice': 485}]
 
 
 
