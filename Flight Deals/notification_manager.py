@@ -1,17 +1,17 @@
 from twilio.rest import Client
+import os
+from dotenv import load_dotenv
 
-my_twilio_number = +13134762190
-account_sid = "AC6df112f0b91b08da20efb1b7d93569ed"
-auth_token = "da8d96a52ac69628e3d70418fe9ed4fe"
+load_dotenv()
 
 class NotificationManager:
     #This class is responsible for sending notifications with the deal flight details.
     def __init__(self):
-        self.client = Client(username=account_sid,password=auth_token)
+        self.client = Client(username=os.environ['account_sid'],password=os.environ['auth_token'])
 
     def send_message(self,message_body):
         message = self.client.messages.create(
-            from_=my_twilio_number,
+            from_=os.environ['my_twilio_number'],
             body=message_body,
             to='+916382727512'
         )
