@@ -23,7 +23,10 @@ def find_affordable_flight(data):
         affordable_flight = FlightData(lowest_price,origin_city,destination,departure_date,return_date)
 
         for flight in data['data']:
-            price = float(flight["price"]["grandTotal"])
+            price = (flight["price"]["grandTotal"])
+            if price == "N/A":
+                continue
+            price = float(price)
             if price < lowest_price:
                 lowest_price = price
                 origin = flight["itineraries"][0]["segments"][0]["departure"]["iataCode"]
