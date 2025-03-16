@@ -27,9 +27,20 @@ six_months_from_today = datetime.datetime.now() + datetime.timedelta(days = (6 *
 
 for destination in sheet_data:
     print(f"Getting flights for {destination['city']}...")
+
     flights = flight_search.check_flights(origin_city_iata,destination['iataCode'],from_time=tomorrow_date,to_time=six_months_from_today)
 
     affordable_flight = find_affordable_flight(flights)
+    print(f"{destination['city']}: £{affordable_flight.price}")
+    time.sleep(2)
+
+    if affordable_flight.price == "N/A":
+        print(f"No direct flight to {destination['city']}. Looking for indirect flights...")
+        stop_over_flights = flight_search.check_flights(origin_city_iata, destination['iataCode'], from_time=tomorrow_date,
+                                              to_time=six_months_from_today, is_direct=False)
+        affordable_flight = find_affordable_flight(stop_over_flights)
+        print(f"Affordable indirect flight price is: £{affordable_flight.price} ")
+
 
     if affordable_flight.price != "N/A":
         print(f"Affordable price found to {destination['city']}")
@@ -42,6 +53,7 @@ for destination in sheet_data:
         print(f"No affordable price found for {destination['city']}")
 
     time.sleep(2)
+
 
 
 # ********//////////////////////////sheet_data in sheets
