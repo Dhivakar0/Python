@@ -22,6 +22,8 @@ for city_name in sheet_data:
 data_manager.destination_data = sheet_data
 data_manager.update_destination_data()
 
+customer_emails = data_manager.get_customer_emails()
+
 tomorrow_date = datetime.datetime.now() + datetime.timedelta(days=1)
 six_months_from_today = datetime.datetime.now() + datetime.timedelta(days = (6 * 30))
 
@@ -38,27 +40,27 @@ for destination in sheet_data:
         print(f"No direct flight to {destination['city']}. Looking for indirect flights...")
         stop_over_flights = flight_search.check_flights(origin_city_iata, destination['iataCode'], from_time=tomorrow_date,
                                               to_time=six_months_from_today, is_direct=False)
-        affordable_flight = find_affordable_flight(stop_over_flights)
-        print(f"Affordable indirect flight price is: £{affordable_flight.price} ")
+        affordable_flight_with_stops = find_affordable_flight(stop_over_flights)
+        print(f"Affordable indirect flight price is: £{affordable_flight_with_stops.price} ")
 
-
-    if affordable_flight.price != "N/A":
-        print(f"Affordable price found to {destination['city']}")
-        notification_manager.send_message(
-            message_body=f"Low price alert! Only £{affordable_flight.price} to fly "
-                         f"from {affordable_flight.origin} to {affordable_flight.destination}, "
+    if affordable_flight.price != "N/A" and affordable_flight.price < destination['lowestPrice']:
+        if affordable_flight.stops == 0:
+            message=f"Low price alert! Only £{affordable_flight.price} to fly "\
+                         f"from {affordable_flight.origin} to {affordable_flight.destination}, "\
                          f"on {affordable_flight.departure_date} until {affordable_flight.return_date}."
-        )
-    else:
-        print(f"No affordable price found for {destination['city']}")
 
-    time.sleep(2)
+        else:
+            message=f"Low price alert! Only £{affordable_flight.price} to fly "\
+                         f"from {affordable_flight.origin} to {affordable_flight.destination}, "\
+                         f"with {affordable_flight.stops} stops "\
+                         f"on {affordable_flight.departure_date} until {affordable_flight.return_date}."
+
+        print(f"Check your email. Lower price flight found to {destination['city']}!")
+
+        notification_manager.send_message(message_body=message)
+
+        notification_manager.send_mails(email_list=customer_emails,message=message)
 
 
 
-# ********//////////////////////////sheet_data in sheets
-
-# [{'city': 'Paris', 'iataCode': 'PAR', 'lowestPrice': 2000, 'id': 2},
-# {'city': 'Frankfurt', 'iataCode': 'FRA', 'lowestPrice': 3000, 'id': 3},
-# {'city': 'Austin', 'iataCode': 'ASQ', 'lowestPrice': 1000, 'id': 4}]
 

@@ -4,17 +4,15 @@ import requests
 
 load_dotenv()
 
-access_token_server = "https://test.api.amadeus.com/v1/security/oauth2/token"
-city_api_endpoint = "https://test.api.amadeus.com/v1/reference-data/locations/cities"
-flight_offers_endpoint = "https://test.api.amadeus.com/v2/shopping/flight-offers"
-
-
 class FlightSearch:
     #This class is responsible for talking to the Flight Search API.
 
     def __init__(self):
         self.key = os.environ["AMADEUS_API_KEY"]
         self.secret = os.environ["AMADEUS_API_SECRET"]
+        self.access_token_server = os.environ['access_token_server']
+        self.city_api_endpoint = os.environ['city_api_endpoint']
+        self.flight_offers_endpoint = os.environ['flight_offers_endpoint']
         self.token = self.get_token()
 
     def get_token(self):
@@ -26,7 +24,7 @@ class FlightSearch:
             'client_id': self.key,
             'client_secret': self.secret
         }
-        response = requests.post(url=access_token_server,headers=header,data=body)
+        response = requests.post(url=self.access_token_server,headers=header,data=body)
         self.token = response.json()['access_token']
         return self.token
 
@@ -38,7 +36,7 @@ class FlightSearch:
             'max' : '2',
             'include' : "AIRPORTS"
         }
-        response = requests.get(url=city_api_endpoint,headers=headers,params=query)
+        response = requests.get(url=self.city_api_endpoint,headers=headers,params=query)
 
         print(f"status code {response.status_code}. Airport IATA: {response.text}")
 
@@ -65,7 +63,7 @@ class FlightSearch:
             "currencyCode": "GBP",
             'max': '20'
         }
-        response = requests.get(url=flight_offers_endpoint,params=query,headers=headers)
+        response = requests.get(url=self.flight_offers_endpoint,params=query,headers=headers)
 
         if response.status_code != 200:
             print(f"check_flights() response code:{response.status_code}")
